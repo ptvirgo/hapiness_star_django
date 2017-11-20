@@ -12,7 +12,7 @@ def one_to_five(number):
 class Star(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    date = models.DateTimeField()
+    date = models.DateField()
 
     spirit = models.IntegerField(validators=[one_to_five])
     exercise = models.IntegerField(validators=[one_to_five])
@@ -20,6 +20,15 @@ class Star(models.Model):
     play = models.IntegerField(validators=[one_to_five])
     friends = models.IntegerField(validators=[one_to_five])
     adventure = models.IntegerField('romance / adventure', validators=[one_to_five])
+
+    def overall(self):
+        return (self.spirit + self.exercise + self.play + self.work +
+                self.friends + self.adventure) / 6.0
+
+    def __repr__(self):
+        return "<Star user=%s date=%s>" % (self.user.email,
+                                           self.date.isoformat())
+
 
 class Tag(models.Model):
 

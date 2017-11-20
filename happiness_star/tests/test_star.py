@@ -26,3 +26,9 @@ class TestStar(TestCase):
             self.assertRaises(ValidationError, star.clean_fields)
             star = StarFactory(**high)
             self.assertRaises(ValidationError, star.clean_fields)
+
+    def test_overall(self):
+        '''Star overall rating appears valid'''
+        star = StarFactory(spirit=2, exercise=2, play=4, work=4, friends=3,
+                           adventure=3)
+        self.assertEqual(star.overall(), 3)
