@@ -1,0 +1,3 @@
+include LICENSE
+inclcude README.rst
+recursive-include gold_stars/templates *
