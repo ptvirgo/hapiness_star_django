@@ -1,0 +1,7 @@
+<form action="{% url 'happiness_star:star_form' %}" method="post">
+<table>
+{% csrf_token %}
+{{ form.as_table }}
+</table>
+<input type="submit" value="save" />
+</form>

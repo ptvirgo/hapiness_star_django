@@ -30,11 +30,23 @@ class Star(models.Model):
                 self.friends + self.adventure) / 6.0
 
     def __repr__(self):
-        return "<Star user=%s date=%s>" % (self.user.email,
+        return '<Star user=%s date=%s>' % (self.user.email,
                                            self.date.isoformat())
+
+    def __str__(self):
+        return 'Star: user=%s date=%s overall=%f' % (
+            self.user.username,
+            self.date.isoformat(),
+            self.overall())
 
 
 class Tag(models.Model):
 
     name = models.CharField(max_length=64, unique=True)
     star = models.ManyToManyField(Star)
+
+    def __repr__(self):
+        return '<Tag name=%s>' % (self.name,)
+
+    def __str__(self):
+        return 'Tag: name=%s' % (self.name,)

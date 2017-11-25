@@ -9,10 +9,6 @@ from ..factories import StarFactory, UserFactory
 
 class TestStar(TestCase):
 
-    def test_sanity(self):
-        '''This test has run.'''
-        self.assertTrue(True)
-
     def test_star_range_validation(self):
         '''Star point attributes are restricted to 1 - 5'''
 
@@ -35,7 +31,9 @@ class TestStar(TestCase):
         first = StarFactory(user=user, date=date(2017, 11, 20))
         first.validate_unique()
 
-        same_user_same_day = StarFactory(user=user, date=date(2017, 11, 20))
+        same_user_same_day = StarFactory()
+        same_user_same_day.user = user
+        same_user_same_day.date = date(2017, 11, 20)
         self.assertRaises(ValidationError, same_user_same_day.validate_unique)
 
         # different day should be fine

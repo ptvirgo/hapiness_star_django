@@ -15,10 +15,10 @@ class UserFactory(factory.django.DjangoModelFactory):
     last_name = factory.Faker('last_name')
     email = factory.Faker('email')
 
+
 class StarFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.Star
-
 
     user = factory.SubFactory(UserFactory)
     date = date.today()
@@ -34,3 +34,5 @@ class StarFactory(factory.django.DjangoModelFactory):
 class TagFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.Tag
+
+    name = factory.fuzzy.FuzzyText()
