@@ -39,6 +39,13 @@ class Star(models.Model):
             self.date.isoformat(),
             self.overall())
 
+    def __iter__(self):
+        return iter([('spirit', self.spirit), ('exercise', self.exercise),
+                     ('play', self.play), ('work', self.work),
+                     ('friends', self.friends), ('adventure', self.adventure),
+                     ('tags', [tag.name for tag in self.tag_set.all()]),
+                     ('date', self.date.isoformat())])
+
 
 class Tag(models.Model):
 

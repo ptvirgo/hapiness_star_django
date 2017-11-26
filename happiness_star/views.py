@@ -65,5 +65,17 @@ class StarFormView(LoginRequiredMixin, View):
                       status=status)
 
     def get(self, request, *args, **kwargs):
-        form = self.form_class()
+
+        try:
+            star = Star.objects.get(user=request.user, date=date.today())
+        except Star.DoesNotExist:
+            star = None
+
+        if star is not None:
+            initial = dict(star)
+        else:
+            initial = {}
+
+        form = self.form_class(initial=initial)
+
         return render(request, self.template_name, {'form': form})
