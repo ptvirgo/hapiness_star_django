@@ -1,3 +1,4 @@
+<h1>Happiness Star for {{ date.isoformat }}</h1>
 <form action="{% url 'happiness_star:star_form' %}" method="post">
 <table>
 {% csrf_token %}

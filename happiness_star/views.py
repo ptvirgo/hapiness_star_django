@@ -61,8 +61,8 @@ class StarFormView(LoginRequiredMixin, View):
         else:
             status = 400
 
-        return render(request, self.template_name, {'form': form},
-                      status=status)
+        return render(request, self.template_name,
+                      {'form': form, 'date': date.today()}, status=status)
 
     def get(self, request, *args, **kwargs):
 
@@ -78,4 +78,5 @@ class StarFormView(LoginRequiredMixin, View):
 
         form = self.form_class(initial=initial)
 
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name,
+                      {'form': form, 'date': date.today()})
