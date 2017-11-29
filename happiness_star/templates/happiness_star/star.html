@@ -1,3 +1,28 @@
+{% extends "base.html" %}
+
 {% block content %}
-wat
+<h1>Star ratings for {{ star.date.isoformat }}</h1>
+
+<table>
+<thead>
+    <tr><th>Point</th><th>Rating</th></tr>
+</thead>
+<tbody>
+    <tr><td>Spirit</td><td>{{ star.spirit }}</td></tr>
+    <tr><td>Exercise</td><td>{{ star.exercise }}</td></tr>
+    <tr><td>Play</td><td>{{ star.play }}</td></tr>
+    <tr><td>Work</td><td>{{ star.work }}</td></tr>
+    <tr><td>Friends</td><td>{{ star.friends }}</td></tr>
+    <tr><td>Adventure</td><td>{{ star.adventure }}</td></tr>
+    <tr><td>Overall</td><td>{{ star.overall }}</td></tr>
+</tbody>
+</table>
+
+<h2>Tags</h2>
+<ul>
+    {% for tag in star.tag_set.all %}
+    <li>{{ tag.name }}</li>
+    {% endfor %}
+</ul>
+
 {% endblock content %}

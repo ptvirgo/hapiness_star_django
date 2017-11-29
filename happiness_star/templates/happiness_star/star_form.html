@@ -1,8 +1,36 @@
+{% extends "base.html" %}
+
+{% block style %}
+<link rel="stylesheet" href="/static/stars.css">
+{% endblock style %}
+
+{% block content %}
 <h1>Happiness Star for {{ date.isoformat }}</h1>
 <form action="{% url 'happiness_star:star_form' %}" method="post">
-<table>
 {% csrf_token %}
-{{ form.as_table }}
+
+<table id="star_form">
+<tbody>
+<thead>
+    <tr><th>Aspect</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+</thead>
+{% for field in form %}
+<tr class="star_attribute">
+
+<td>
+    <label for="{{ field.id_for_label }}">
+    {{ field.html_name.capitalize }}</label>
+</td>
+
+{% for radio in field %}
+<td>{{ radio }}</td>
+{% endfor %}
+</tr>
+{% endfor %}
+
+</tbody>
 </table>
+
 <input type="submit" value="save" />
 </form>
+{% endblock content %}
