@@ -17,11 +17,11 @@ tr.star_attribute input[type="radio"] {
 }
 
 tr.star_attribute input[type="radio"] + label::before {
-    content: url("/static/grey_star.svg");
+    content: url("/static/happiness_star/grey_star.svg");
     display: inline-block;
 }
 
 tr.star_attribute input[type="radio"]:checked + label::before {
-    content: url("/static/gold_star.svg");
+    content: url("/static/happiness_star/gold_star.svg");
     display: inline-block;
 }
