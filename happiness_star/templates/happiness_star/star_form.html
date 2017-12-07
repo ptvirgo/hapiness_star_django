@@ -21,6 +21,9 @@
 <td>
     <label for="{{ field.id_for_label }}">
     {{ field.html_name.capitalize }}</label>
+    {% if field.errors %}
+        {{ field.errors }}
+    {% endif %}
 </td>
 
 {% for radio in field %}
