@@ -14,7 +14,7 @@ class Star(models.Model):
     class Meta:
         unique_together = ('user', 'date')
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     date = models.DateField()
 
     spirit = models.IntegerField(validators=[one_to_five])
