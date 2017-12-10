@@ -6,13 +6,13 @@
 {% endblock style %}
 
 {% block content %}
-<h1>Happiness Star for {{ date.isoformat }}</h1>
 <form action="{% url 'happiness_star:star_form' %}" method="post">
 {% csrf_token %}
 
 <table id="star_form">
 <tbody>
 <thead>
+    <tr><th></th><th colspan="5"><h1>Stars for {{ date.isoformat }}</h1></th></tr>
     <tr><th>Aspect</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
 </thead>
 {% for field in form %}
@@ -31,10 +31,13 @@
 {% endfor %}
 </tr>
 {% endfor %}
+<tr>
+    <td colspan="5"></td>
+    <td><input type="submit" value="save" id="star_form_submit" /></td>
+</tr>
 
 </tbody>
 </table>
 
-<input type="submit" value="save" />
 </form>
 {% endblock content %}
