@@ -17,13 +17,12 @@ class Star(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     date = models.DateField()
 
-    spirit = models.IntegerField(validators=[one_to_five])
+    spirit = models.IntegerField('energy / spirit', validators=[one_to_five])
     exercise = models.IntegerField(validators=[one_to_five])
     work = models.IntegerField(validators=[one_to_five])
     play = models.IntegerField(validators=[one_to_five])
     friends = models.IntegerField(validators=[one_to_five])
-    adventure = models.IntegerField(
-        'romance / adventure', validators=[one_to_five])
+    adventure = models.IntegerField('romance / adventure', validators=[one_to_five])
 
     def overall(self):
         return (self.spirit + self.exercise + self.play + self.work +

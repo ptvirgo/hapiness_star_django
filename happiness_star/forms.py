@@ -11,8 +11,9 @@ class StarForm(forms.ModelForm):
         model = Star
         fields = ['spirit', 'exercise', 'play', 'work', 'friends', 'adventure']
 
-    spirit = forms.IntegerField(widget=StarSelect(
-        choices=one_to_five, attrs={'class': 'star_radio'}))
+    spirit = forms.IntegerField(
+        label="Energy / spirit",
+        widget=StarSelect(choices=one_to_five, attrs={'class': 'star_radio'}))
     exercise = forms.IntegerField(widget=StarSelect(
         choices=one_to_five, attrs={'class': 'star_radio'}))
     play = forms.IntegerField(widget=StarSelect(
@@ -21,5 +22,6 @@ class StarForm(forms.ModelForm):
         choices=one_to_five, attrs={'class': 'star_radio'}))
     friends = forms.IntegerField(widget=StarSelect(
         choices=one_to_five, attrs={'class': 'star_radio'}))
-    adventure = forms.IntegerField(widget=StarSelect(
-        choices=one_to_five, attrs={'class': 'star_radio'}))
+    adventure = forms.IntegerField(
+        label="Romance / adventure",
+        widget=StarSelect(choices=one_to_five, attrs={'class': 'star_radio'}))
