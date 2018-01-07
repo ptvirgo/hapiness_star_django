@@ -33,7 +33,7 @@ class Star(models.Model):
                                            self.date.isoformat())
 
     def __str__(self):
-        return 'Star: user=%s date=%s overall=%f' % (
+        return 'user: %s, date: %s, overall: %f' % (
             self.user.username,
             self.date.isoformat(),
             self.overall())
@@ -55,4 +55,4 @@ class Tag(models.Model):
         return '<Tag name=%s>' % (self.name,)
 
     def __str__(self):
-        return 'Tag: name=%s' % (self.name,)
+        return '%s' % (self.name,)
