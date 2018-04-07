@@ -1,9 +1,11 @@
+from datetime import datetime
 import json
 import re
 
 from django.urls import reverse
 from django.test import Client, TestCase
 
+from ..models import Star, Tag
 from ..factories import UserFactory, StarFactory
 
 
@@ -76,7 +78,7 @@ class GrapheneTestCase(TestCase):
 
 
 class TestReadStars(GrapheneTestCase):
-    """Stars can be read via graphene"""
+    """Stars can be read via graphql"""
 
     def test_nobody_gets_nothing(self):
         """Anonymous users have no stars, see no stars"""
@@ -94,6 +96,7 @@ class TestReadStars(GrapheneTestCase):
         self.assertEqual(result["data"]["star"], None)
 
     def test_owner_gets_stars(self):
+        """Owners can see their stars"""
         star = StarFactory(user=self.owner["user"])
 
         # allStars
@@ -114,3 +117,46 @@ class TestReadStars(GrapheneTestCase):
                 getattr(star, field, None),
                 result["data"]["star"][field],
                 msg="mismatch on %s" % (field,))
+
+
+class TestCreateStar(GrapheneTestCase):
+    """Stars can be created via graphql"""
+
+    def test_create_requires_jwt(self):
+        query = """mutation{
+                    saveStar(
+                        spirit: 1,
+                        exercise: 2,
+                        play: 3,
+                        work: 4,
+                        friends: 5,
+                        adventure: 6)
+                    {date spirit exercise play work friends adventure}}"""
+
+        result = self.execute(query)
+
+        self.assertTrue("errors" in result)
+        self.assertEqual(result["errors"][0]["message"], "not authorized")
+
+    def test_create_produces_star(self):
+        query = """mutation{
+                    saveStar(
+                        spirit: 1,
+                        exercise: 2,
+                        play: 3,
+                        work: 4,
+                        friends: 5,
+                        adventure: 6)
+                    {date spirit exercise play work friends adventure}}"""
+
+        result = self.execute(query, self.owner["header"], True)
+
+        lookup = Star.objects.get(
+            user=self.owner["user"], date=datetime.today())
+
+        self.assertEqual(lookup.spirit, 1)
+        self.assertEqual(lookup.exercise, 2)
+        self.assertEqual(lookup.play, 3)
+        self.assertEqual(lookup.work, 4)
+        self.assertEqual(lookup.friends, 5)
+        self.assertEqual(lookup.adventure, 6)

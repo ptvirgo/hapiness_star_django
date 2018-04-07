@@ -71,3 +71,49 @@ class StarQuery(graphene.ObjectType):
 
         star = Star.objects.get(date=date)
         return star
+
+
+class SaveStar(graphene.Mutation):
+    date = graphene.Date(required=True)
+    spirit = graphene.Int(required=True)
+    exercise = graphene.Int(required=True)
+    play = graphene.Int(required=True)
+    work = graphene.Int(required=True)
+    friends = graphene.Int(required=True)
+    adventure = graphene.Int(required=True)
+
+    class Arguments:
+        spirit = graphene.Int(required=True)
+        exercise = graphene.Int(required=True)
+        play = graphene.Int(required=True)
+        work = graphene.Int(required=True)
+        friends = graphene.Int(required=True)
+        adventure = graphene.Int(required=True)
+
+    def mutate(self, info, spirit, exercise, play, work, friends, adventure):
+        today = datetime.today()
+        user = context_to_user(info.context)
+
+        if user is None:
+            raise ValueError("not authorized")
+
+        try:
+            star = Star.objects.get(user=user, date=today)
+        except Star.DoesNotExist:
+            star = Star(user=user, date=today)
+
+        star.spirit = spirit
+        star.exercise = exercise
+        star.play = play
+        star.work = work
+        star.friends = friends
+        star.adventure = adventure
+        star.save()
+
+        return SaveStar(
+            date=today, spirit=spirit, exercise=exercise, play=play, work=work,
+            friends=friends, adventure=adventure)
+
+
+class StarMutation(graphene.ObjectType):
+    save_star = SaveStar.Field()
