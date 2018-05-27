@@ -12,6 +12,8 @@ from ..factories import UserFactory, StarFactory
 class GrapheneTestCase(TestCase):
     """Provide some standard test configuration for Graphql Queries"""
 
+    star_fields = ["spirit", "exercise", "play", "work", "friends", "adventure"]
+
     @classmethod
     def setUpClass(cls, *args, **kwargs):
         """Prepare a JWT for a valid test user"""
@@ -105,14 +107,12 @@ class TestReadStars(GrapheneTestCase):
         self.assertEqual(len(result["data"]["allStars"]), 1)
 
         # star
-        fields = ["spirit", "exercise", "work", "play", "friends", "adventure"]
-
         query = """{star(date: "%s"){%s}}
-                """ % (star.date, " ".join(fields))
+                """ % (star.date, " ".join(self.star_fields))
 
         result = self.execute(query, self.owner["header"], True)
 
-        for field in fields:
+        for field in self.star_fields:
             self.assertEqual(
                 getattr(star, field, None),
                 result["data"]["star"][field],
@@ -130,7 +130,8 @@ class TestCreateStar(GrapheneTestCase):
                         play: 3,
                         work: 4,
                         friends: 5,
-                        adventure: 6)
+                        adventure: 6
+                    )
                     {date spirit exercise play work friends adventure}}"""
 
         result = self.execute(query)
@@ -146,7 +147,8 @@ class TestCreateStar(GrapheneTestCase):
                         play: 3,
                         work: 4,
                         friends: 5,
-                        adventure: 6)
+                        adventure: 6
+                    )
                     {date spirit exercise play work friends adventure}}"""
 
         result = self.execute(query, self.owner["header"], True)
@@ -160,3 +162,23 @@ class TestCreateStar(GrapheneTestCase):
         self.assertEqual(lookup.work, 4)
         self.assertEqual(lookup.friends, 5)
         self.assertEqual(lookup.adventure, 6)
+
+    def test_create_leaves_uspecified_values_alone(self):
+        """
+        Calling saveStar with some unspecified values should leave those values
+        unchanged.
+        """
+        star = StarFactory(user=self.owner["user"])
+        expect = dict(star)
+        expect["friends"] = (star.friends + 1) if star.friends < 5 else 1
+
+        query = """mutation{ saveStar( friends: %d ) {
+            date spirit exercise play work friends adventure }}
+            """ % (expect["friends"],)
+
+        result = self.execute(query, self.owner["header"], True)
+        star.refresh_from_db()
+
+        for field in self.star_fields:
+            self.assertEqual(
+                getattr(star, field), expect[field], msg=f"mismatch on {field}")

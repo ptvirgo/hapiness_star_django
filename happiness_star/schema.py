@@ -83,14 +83,14 @@ class SaveStar(graphene.Mutation):
     adventure = graphene.Int(required=True)
 
     class Arguments:
-        spirit = graphene.Int(required=True)
-        exercise = graphene.Int(required=True)
-        play = graphene.Int(required=True)
-        work = graphene.Int(required=True)
-        friends = graphene.Int(required=True)
-        adventure = graphene.Int(required=True)
+        spirit = graphene.Int()
+        exercise = graphene.Int()
+        play = graphene.Int()
+        work = graphene.Int()
+        friends = graphene.Int()
+        adventure = graphene.Int()
 
-    def mutate(self, info, spirit, exercise, play, work, friends, adventure):
+    def mutate(self, info, **kwargs):
         today = datetime.today()
         user = context_to_user(info.context)
 
@@ -102,17 +102,16 @@ class SaveStar(graphene.Mutation):
         except Star.DoesNotExist:
             star = Star(user=user, date=today)
 
-        star.spirit = spirit
-        star.exercise = exercise
-        star.play = play
-        star.work = work
-        star.friends = friends
-        star.adventure = adventure
-        star.save()
+        for field in ["spirit", "exercise", "play", "work", "friends"
+                     ,"adventure"]:
+            new_val = kwargs.get(field, getattr(star, field, 3))
+            setattr(star, field, new_val)
 
+        star.save()
         return SaveStar(
-            date=today, spirit=spirit, exercise=exercise, play=play, work=work,
-            friends=friends, adventure=adventure)
+            date=today, spirit=star.spirit, exercise=star.exercise,
+play=star.play, work=star.work,
+            friends=star.friends, adventure=star.adventure)
 
 
 class StarMutation(graphene.ObjectType):
