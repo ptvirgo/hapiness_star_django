@@ -28,13 +28,15 @@ def context_to_user(context):
             return
 
     token = authorization[7:]
+    return token_to_user(token)
+
+
+def token_to_user(token):
+    """Given a JWT, return the appropriate user"""
+
     claims = jwt.decode(
         token, settings.SECRET_KEY,
         [getattr(settings, "JWT_ALGORITHM", "HS256")])
-    ts = datetime.now().timestamp()
-
-    if ts < claims["nbf"] or ts > claims["exp"]:
-        raise ValueError("invalid token")
 
     try:
         user = User.objects.get(pk=int(claims["sub"]))
@@ -50,21 +52,28 @@ class StarNode(DjangoObjectType):
 
 
 class StarQuery(graphene.ObjectType):
-    all_stars = graphene.List(StarNode)
-    star = graphene.Field(StarNode, date=graphene.Date())
+    all_stars = graphene.List(StarNode, token=graphene.String())
+    star = graphene.Field(
+        StarNode, date=graphene.Date(), token=graphene.String(required=True))
 
-    def resolve_all_stars(self, info, **kwargs):
+    def resolve_all_stars(self, info, token, **kwargs):
         """Produce all stars owned by the provided user."""
-        user = context_to_user(info.context)
+        try:
+            user = token_to_user(token)
+        except:
+            user = None
 
         if user is None:
             return
 
         return Star.objects.filter(user=user)
 
-    def resolve_star(self, info, date, **kwargs):
+    def resolve_star(self, info, date, token, **kwargs):
         """Produce a specific star for a given date."""
-        user = context_to_user(info.context)
+        try:
+            user = token_to_user(token)
+        except:
+            user = None
 
         if user is None:
             return
@@ -89,10 +98,15 @@ class SaveStar(graphene.Mutation):
         work = graphene.Int()
         friends = graphene.Int()
         adventure = graphene.Int()
+        token = graphene.String(required=True)
 
     def mutate(self, info, **kwargs):
         today = datetime.today()
-        user = context_to_user(info.context)
+
+        try:
+            user = token_to_user(kwargs["token"])
+        except:
+            user = None
 
         if user is None:
             raise ValueError("not authorized")

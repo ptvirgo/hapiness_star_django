@@ -13,6 +13,7 @@ class GrapheneTestCase(TestCase):
     """Provide some standard test configuration for Graphql Queries"""
 
     star_fields = ["spirit", "exercise", "play", "work", "friends", "adventure"]
+    bad_jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1Mjc4ODkyMzcuMDk4NDUsIm5iZiI6MTUyNzg4ODYzNy4wOTg0NSwic3ViIjoiNCJ9.DDhCfcBtD0l89oAo3otUaiOZa0IktSvRoN_m5Rp8iWw"
 
     @classmethod
     def setUpClass(cls, *args, **kwargs):
@@ -83,18 +84,19 @@ class TestReadStars(GrapheneTestCase):
     """Stars can be read via graphql"""
 
     def test_nobody_gets_nothing(self):
-        """Anonymous users have no stars, see no stars"""
+        """Invalid users have no stars, see no stars"""
         star = StarFactory(user=self.owner["user"])
 
         # allStars
-        query = """{allStars(token: "invalid") {date spirit work}}"""
-        result = self.execute(query, raise_errors=True)
+        query = """{allStars(token: "%s") {date spirit work}}""" % \
+            (self.bad_jwt,)
+        result = self.execute(query)
         self.assertIs(result["data"]["allStars"], None)
 
         # star
-        query = """{star(date: "%s", token: "invalid"){date spirit work}}""" % \
-            (star.date,)
-        result = self.execute(query, raise_errors=True)
+        query = """{star(date: "%s", token: "%s")
+                   {date spirit work}}""" % (star.date, self.bad_jwt)
+        result = self.execute(query)
         self.assertEqual(result["data"]["star"], None)
 
     def test_owner_gets_stars(self):
@@ -135,7 +137,7 @@ class TestCreateStar(GrapheneTestCase):
                         token: "%s"
                     )
                     {date spirit exercise play work friends adventure}}
-                """ % (self.owner["jwt"])
+                """ % (self.bad_jwt,)
 
         result = self.execute(query)
 
