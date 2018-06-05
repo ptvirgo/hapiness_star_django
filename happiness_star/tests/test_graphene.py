@@ -40,7 +40,7 @@ class GrapheneTestCase(TestCase):
 
         jwt = match.groups()[0]
         header = {"Authorization": "Bearer %s" % (jwt,)}
-        cls.owner = {"user": user, "header": header}
+        cls.owner = {"user": user, "header": header, "jwt": jwt}
 
     @staticmethod
     def execute(query, headers=None, raise_errors=False):
@@ -87,13 +87,13 @@ class TestReadStars(GrapheneTestCase):
         star = StarFactory(user=self.owner["user"])
 
         # allStars
-        query = """{allStars {date spirit work}}"""
+        query = """{allStars(token: "invalid") {date spirit work}}"""
         result = self.execute(query, raise_errors=True)
         self.assertIs(result["data"]["allStars"], None)
 
         # star
-        query = """{star(date: "%s"){date spirit work}}""" % \
-                (star.date,)
+        query = """{star(date: "%s", token: "invalid"){date spirit work}}""" % \
+            (star.date,)
         result = self.execute(query, raise_errors=True)
         self.assertEqual(result["data"]["star"], None)
 
@@ -102,15 +102,16 @@ class TestReadStars(GrapheneTestCase):
         star = StarFactory(user=self.owner["user"])
 
         # allStars
-        query = """{allStars {date spirit work}}"""
-        result = self.execute(query, self.owner["header"], True)
+        query = """{allStars(token: "%s"){date spirit work}}""" % \
+            (self.owner["jwt"])
+        result = self.execute(query, raise_errors=True)
         self.assertEqual(len(result["data"]["allStars"]), 1)
 
         # star
-        query = """{star(date: "%s"){%s}}
-                """ % (star.date, " ".join(self.star_fields))
+        query = """{star(date: "%s", token: "%s"){%s}}
+                """ % (star.date, self.owner["jwt"], " ".join(self.star_fields))
 
-        result = self.execute(query, self.owner["header"], True)
+        result = self.execute(query, raise_errors=True)
 
         for field in self.star_fields:
             self.assertEqual(
@@ -130,9 +131,11 @@ class TestCreateStar(GrapheneTestCase):
                         play: 3,
                         work: 4,
                         friends: 5,
-                        adventure: 6
+                        adventure: 6,
+                        token: "%s"
                     )
-                    {date spirit exercise play work friends adventure}}"""
+                    {date spirit exercise play work friends adventure}}
+                """ % (self.owner["jwt"])
 
         result = self.execute(query)
 
@@ -147,11 +150,13 @@ class TestCreateStar(GrapheneTestCase):
                         play: 3,
                         work: 4,
                         friends: 5,
-                        adventure: 6
+                        adventure: 6,
+                        token: "%s"
                     )
-                    {date spirit exercise play work friends adventure}}"""
+                    {date spirit exercise play work friends adventure}}
+                """ % (self.owner["jwt"])
 
-        result = self.execute(query, self.owner["header"], True)
+        result = self.execute(query, raise_errors=True)
 
         lookup = Star.objects.get(
             user=self.owner["user"], date=datetime.today())
@@ -172,11 +177,11 @@ class TestCreateStar(GrapheneTestCase):
         expect = dict(star)
         expect["friends"] = (star.friends + 1) if star.friends < 5 else 1
 
-        query = """mutation{ saveStar( friends: %d ) {
+        query = """mutation{ saveStar( friends: %d, token: "%s" ) {
             date spirit exercise play work friends adventure }}
-            """ % (expect["friends"],)
+            """ % (expect["friends"], self.owner["jwt"])
 
-        result = self.execute(query, self.owner["header"], True)
+        result = self.execute(query, raise_errors=True)
         star.refresh_from_db()
 
         for field in self.star_fields:
