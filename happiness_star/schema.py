@@ -1,5 +1,6 @@
 from jose import jwt
 from datetime import datetime
+from dateutil.parser import parse
 from warnings import warn
 
 from django.conf import settings
@@ -54,14 +55,11 @@ class StarNode(DjangoObjectType):
 class StarQuery(graphene.ObjectType):
     all_stars = graphene.List(StarNode, token=graphene.String())
     star = graphene.Field(
-        StarNode, date=graphene.Date(), token=graphene.String(required=True))
+        StarNode, date=graphene.String(), token=graphene.String(required=True))
 
     def resolve_all_stars(self, info, token, **kwargs):
         """Produce all stars owned by the provided user."""
-        try:
-            user = token_to_user(token)
-        except:
-            user = None
+        user = token_to_user(token)
 
         if user is None:
             return
@@ -70,15 +68,13 @@ class StarQuery(graphene.ObjectType):
 
     def resolve_star(self, info, date, token, **kwargs):
         """Produce a specific star for a given date."""
-        try:
-            user = token_to_user(token)
-        except:
-            user = None
+        user = token_to_user(token)
 
         if user is None:
             return
 
-        star = Star.objects.get(date=date)
+        d = parse(date)
+        star = Star.objects.get(date=d, user=user)
         return star
 
 
