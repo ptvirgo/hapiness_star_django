@@ -114,7 +114,11 @@ class SaveStar(graphene.Mutation):
 
         for field in ["spirit", "exercise", "play", "work", "friends"
                      ,"adventure"]:
-            new_val = kwargs.get(field, getattr(star, field, 3))
+            new_val = kwargs.get(field, getattr(star, field))
+
+            if new_val is None:
+                new_val = 3
+
             setattr(star, field, new_val)
 
         star.save()
