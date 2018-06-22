@@ -5,7 +5,7 @@ Keep track of how you are doing in important areas of your life so that you can 
 
 # Project Status
 
-This is a prototype;  with testing, feedback, and a bit of work, I hope I can develop it into a commercial-grade web application while maintaining a [free](https://www.gnu.org/philosophy/free-sw.en.html) codebase.
+This is a prototype / demo app.
 
 # Developer Details
 
@@ -20,3 +20,7 @@ This is a Django app.
   b. `$ git clone https://github.com/ptvirgo/hapiness_star_django.git; cd hapiness_star_django; pip install ./`
 
 3. In your Django settings, set `TEMPLATES[{ .. APP_DIRS: True }]` and add `happiness_star` to INSTALLED_APPS.
+4. In your primary django urls.py, add
+    `path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=False)))`
+    or
+    `path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True)))`
