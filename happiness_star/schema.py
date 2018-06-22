@@ -1,50 +1,15 @@
-from jose import jwt
 from datetime import datetime
 from dateutil.parser import parse
 from warnings import warn
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 
 import graphene
 from graphene_django import DjangoObjectType
 
+from user_extensions.utils import jwt_user
+
 from .models import Star, Tag
-
-
-User = get_user_model()
-
-
-def context_to_user(context):
-    """Given the context (expecting a JWT), return the appropriate user"""
-
-    authorization = context.META.get("Authorization", None)
-
-    if authorization is None:
-
-        if settings.DEBUG and context.user.is_authenticated:
-            warn("DEBUG MODE: providing user from request context")
-            return context.user
-        else:
-            return
-
-    token = authorization[7:]
-    return token_to_user(token)
-
-
-def token_to_user(token):
-    """Given a JWT, return the appropriate user"""
-
-    claims = jwt.decode(
-        token, settings.SECRET_KEY,
-        [getattr(settings, "JWT_ALGORITHM", "HS256")])
-
-    try:
-        user = User.objects.get(pk=int(claims["sub"]))
-    except:
-        raise ValueError("invalid token")
-
-    return user
 
 
 class StarNode(DjangoObjectType):
@@ -59,7 +24,7 @@ class StarQuery(graphene.ObjectType):
 
     def resolve_all_stars(self, info, token, **kwargs):
         """Produce all stars owned by the provided user."""
-        user = token_to_user(token)
+        user = jwt_user(token)
 
         if user is None:
             return
@@ -68,7 +33,7 @@ class StarQuery(graphene.ObjectType):
 
     def resolve_star(self, info, date, token, **kwargs):
         """Produce a specific star for a given date."""
-        user = token_to_user(token)
+        user = jwt_user(token)
 
         if user is None:
             return
@@ -100,7 +65,7 @@ class SaveStar(graphene.Mutation):
         today = datetime.today()
 
         try:
-            user = token_to_user(kwargs["token"])
+            user = jwt_user(kwargs["token"])
         except:
             user = None
 

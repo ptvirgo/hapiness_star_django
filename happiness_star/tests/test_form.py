@@ -1,8 +1,10 @@
 from django.test import Client, TestCase
 from django.urls import reverse
 
+from user_extensions.factories import UserFactory
+
 from ..models import Star
-from ..factories import UserFactory, StarFactory, TagFactory
+from ..factories import StarFactory, TagFactory
 
 from datetime import date
 

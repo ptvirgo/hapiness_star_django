@@ -7,6 +7,8 @@ from django.utils import timezone
 
 from dateutil.parser import parse
 
+from user_extensions import utils
+
 from .models import Star
 from .forms import StarForm
 
