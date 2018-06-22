@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="star"></div>
+{% endblock content %}
+
+{% block scripts %}
+<script src="/static/happiness_star/elm-star.js"></script>
+<script type="text/javascript">
+var elmDiv = document.getElementById("star");
+var app = Elm.Main.embed(elmDiv, "{{ token }}");
+console.log("{{ token }}");
+</script>
+{% endblock scripts %}

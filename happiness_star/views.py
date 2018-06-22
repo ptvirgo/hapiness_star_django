@@ -84,3 +84,13 @@ class StarFormView(LoginRequiredMixin, View):
 
         return render(request, self.template_name,
                       {'form': form, 'date': self.star_date})
+
+class StarElmView(LoginRequiredMixin, View):
+    '''Display the Elm + GQL interface'''
+
+    template_name = 'happiness_star/elm-star.html'
+
+    def get(self, request, *args, **kwargs):
+        user = self.request.user
+        token = utils.user_jwt(user)
+        return render(request, self.template_name, {'token': token}, status=200)
