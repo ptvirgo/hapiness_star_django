@@ -11310,7 +11310,10 @@ var _user$project$Control$updateModel = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{star: _p2._0, error: _elm_lang$core$Maybe$Nothing}),
+						{
+							star: _elm_lang$core$Maybe$Just(_p2._0),
+							error: _elm_lang$core$Maybe$Nothing
+						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			default:
@@ -11409,79 +11412,85 @@ var _user$project$View$ratingField = F2(
 				}
 			});
 	});
-var _user$project$View$viewStar = function (star) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$id('StarDiv'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$table,
-				{ctor: '[]'},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$tr,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$td,
-								{ctor: '[]'},
-								{ctor: '[]'}),
-							_1: {
+var _user$project$View$viewStar = function (mbs) {
+	var _p1 = mbs;
+	if (_p1.ctor === 'Nothing') {
+		return _elm_lang$html$Html$text('');
+	} else {
+		var _p2 = _p1._0;
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id('StarDiv'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$table,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$tr,
+							{ctor: '[]'},
+							{
 								ctor: '::',
 								_0: A2(
 									_elm_lang$html$Html$td,
 									{ctor: '[]'},
-									{
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$h1,
-											{ctor: '[]'},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text(
-													A2(_elm_lang$core$Basics_ops['++'], 'Stars for ', star.date)),
-												_1: {ctor: '[]'}
-											}),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}
-						}),
-					_1: {
-						ctor: '::',
-						_0: A2(_user$project$View$ratingField, _user$project$Model$Spirit, star.spirit),
-						_1: {
-							ctor: '::',
-							_0: A2(_user$project$View$ratingField, _user$project$Model$Exercise, star.exercise),
-							_1: {
-								ctor: '::',
-								_0: A2(_user$project$View$ratingField, _user$project$Model$Play, star.play),
+									{ctor: '[]'}),
 								_1: {
 									ctor: '::',
-									_0: A2(_user$project$View$ratingField, _user$project$Model$Work, star.work),
+									_0: A2(
+										_elm_lang$html$Html$td,
+										{ctor: '[]'},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$h1,
+												{ctor: '[]'},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text(
+														A2(_elm_lang$core$Basics_ops['++'], 'Stars for ', _p2.date)),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(_user$project$View$ratingField, _user$project$Model$Spirit, _p2.spirit),
+							_1: {
+								ctor: '::',
+								_0: A2(_user$project$View$ratingField, _user$project$Model$Exercise, _p2.exercise),
+								_1: {
+									ctor: '::',
+									_0: A2(_user$project$View$ratingField, _user$project$Model$Play, _p2.play),
 									_1: {
 										ctor: '::',
-										_0: A2(_user$project$View$ratingField, _user$project$Model$Friends, star.friends),
+										_0: A2(_user$project$View$ratingField, _user$project$Model$Work, _p2.work),
 										_1: {
 											ctor: '::',
-											_0: A2(_user$project$View$ratingField, _user$project$Model$Adventure, star.adventure),
-											_1: {ctor: '[]'}
+											_0: A2(_user$project$View$ratingField, _user$project$Model$Friends, _p2.friends),
+											_1: {
+												ctor: '::',
+												_0: A2(_user$project$View$ratingField, _user$project$Model$Adventure, _p2.adventure),
+												_1: {ctor: '[]'}
+											}
 										}
 									}
 								}
 							}
 						}
-					}
-				}),
-			_1: {ctor: '[]'}
-		});
+					}),
+				_1: {ctor: '[]'}
+			});
+	}
 };
 var _user$project$View$viewModel = function (model) {
 	return A2(
@@ -11501,11 +11510,7 @@ var _user$project$View$viewModel = function (model) {
 var _user$project$Main$withJwt = function (jwt) {
 	return {
 		ctor: '_Tuple2',
-		_0: {
-			star: {spirit: 3, exercise: 3, play: 3, work: 3, friends: 3, adventure: 3, date: '2001-1-1'},
-			jwt: jwt,
-			error: _elm_lang$core$Maybe$Nothing
-		},
+		_0: {star: _elm_lang$core$Maybe$Nothing, jwt: jwt, error: _elm_lang$core$Maybe$Nothing},
 		_1: _user$project$Control$saveStar(
 			_user$project$Control$nullStarInput(jwt))
 	};

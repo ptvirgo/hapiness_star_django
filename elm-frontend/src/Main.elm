@@ -10,15 +10,7 @@ import Control exposing (updateModel, Msg(..), saveStar, nullStarInput)
 withJwt : String -> (Model, Cmd Msg)
 withJwt jwt =
     (
-    { star =
-        { spirit = 3
-        , exercise = 3
-        , play = 3
-        , work = 3
-        , friends = 3
-        , adventure = 3
-        , date = "2001-1-1"
-        }
+    { star = Nothing
     , jwt = jwt
     , error = Nothing
     }

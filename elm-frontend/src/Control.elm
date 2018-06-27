@@ -13,7 +13,7 @@ type Msg = Update Point Rating | NewStar Star | GotError String
 updateModel : Msg -> Model -> (Model, Cmd Msg)
 updateModel msg model = case msg of
     (Update pt x) -> updatePoint pt x model
-    (NewStar star) -> ({ model | star = star, error = Nothing }, Cmd.none )
+    (NewStar star) -> ({ model | star = Just star, error = Nothing }, Cmd.none )
     (GotError err) -> ({ model | error = Just err }, Cmd.none )
 
 updatePoint : Point -> Rating -> Model -> (Model, Cmd Msg)

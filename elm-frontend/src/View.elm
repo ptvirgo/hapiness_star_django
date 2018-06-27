@@ -21,22 +21,24 @@ greyStar : String
 greyStar = "/static/happiness_star/grey_star.svg"
 
 {-| Display the Star -}
-viewStar : Star -> Html Msg
-viewStar star = div
-    [ id "StarDiv" ]
-    [ table []
-        [ tr []
-            [ td [] []
-            , td [] [ h1 [] [ text ("Stars for " ++ star.date) ] ]
+viewStar : Maybe Star -> Html Msg
+viewStar mbs = case mbs of
+    Nothing -> text ""
+    (Just star) -> div
+        [ id "StarDiv" ]
+        [ table []
+            [ tr []
+                [ td [] []
+                , td [] [ h1 [] [ text ("Stars for " ++ star.date) ] ]
+                ]
+            , ratingField Spirit star.spirit
+            , ratingField Exercise star.exercise
+            , ratingField Play star.play
+            , ratingField Work star.work
+            , ratingField Friends star.friends
+            , ratingField Adventure star.adventure
             ]
-        , ratingField Spirit star.spirit 
-        , ratingField Exercise star.exercise 
-        , ratingField Play star.play 
-        , ratingField Work star.work
-        , ratingField Friends star.friends
-        , ratingField Adventure star.adventure
         ]
-    ]
 
 {-| Display interface to update a single Point -}
 

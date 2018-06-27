@@ -8,7 +8,7 @@ setup(
     name='happiness_star',
     description='Django app for tracking life satisfaction or happiness',
     long_description=README,
-    version='0.2.0',
+    version='0.2.1',
     author='Pablo Virgo',
     author_email='mailbox@pablovirgo.com',
     packages=find_packages()

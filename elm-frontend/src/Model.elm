@@ -21,7 +21,7 @@ type alias Star =
     }
 
 type alias Model =
-        { star : Star
+        { star : Maybe Star
         , jwt : String
         , error : Maybe String
         }
