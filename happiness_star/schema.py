@@ -1,15 +1,11 @@
-from datetime import datetime
 from dateutil.parser import parse
-from warnings import warn
-
-from django.conf import settings
 
 import graphene
 from graphene_django import DjangoObjectType
 
-from user_extensions.utils import jwt_user
+from user_extensions.utils import jwt_user, user_time
 
-from .models import Star, Tag
+from .models import Star
 
 
 class StarNode(DjangoObjectType):
@@ -62,8 +58,6 @@ class SaveStar(graphene.Mutation):
         token = graphene.String(required=True)
 
     def mutate(self, info, **kwargs):
-        today = datetime.today()
-
         try:
             user = jwt_user(kwargs["token"])
         except:
@@ -72,13 +66,15 @@ class SaveStar(graphene.Mutation):
         if user is None:
             raise ValueError("not authorized")
 
+        today = user_time(user)
+
         try:
             star = Star.objects.get(user=user, date=today)
         except Star.DoesNotExist:
             star = Star(user=user, date=today)
 
-        for field in ["spirit", "exercise", "play", "work", "friends"
-                     ,"adventure"]:
+        for field in ["spirit", "exercise", "play", "work", "friends",
+                      "adventure"]:
             new_val = kwargs.get(field, getattr(star, field))
 
             if new_val is None:
@@ -89,7 +85,7 @@ class SaveStar(graphene.Mutation):
         star.save()
         return SaveStar(
             date=today, spirit=star.spirit, exercise=star.exercise,
-play=star.play, work=star.work,
+            play=star.play, work=star.work,
             friends=star.friends, adventure=star.adventure)
 
 

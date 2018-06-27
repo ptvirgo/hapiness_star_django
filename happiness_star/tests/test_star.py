@@ -3,8 +3,10 @@ from datetime import date
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 
+from user_extensions.factories import UserFactory
+
 from factory.fuzzy import FuzzyInteger
-from ..factories import StarFactory, UserFactory
+from ..factories import StarFactory
 
 
 class TestStar(TestCase):

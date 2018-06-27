@@ -48,7 +48,6 @@ class StarFormView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
 
-
         if form.is_valid():
 
             try:
@@ -85,6 +84,7 @@ class StarFormView(LoginRequiredMixin, View):
         return render(request, self.template_name,
                       {'form': form, 'date': self.star_date})
 
+
 class StarElmView(LoginRequiredMixin, View):
     '''Display the Elm + GQL interface'''
 
@@ -93,4 +93,5 @@ class StarElmView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         user = self.request.user
         token = utils.user_jwt(user)
-        return render(request, self.template_name, {'token': token}, status=200)
+        return render(
+            request, self.template_name, {'token': token}, status=200)

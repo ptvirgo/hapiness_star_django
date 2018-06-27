@@ -1,12 +1,11 @@
+from datetime import date
+
 from django.test import Client, TestCase
 from django.urls import reverse
 
 from user_extensions.factories import UserFactory
 
 from ..models import Star
-from ..factories import StarFactory, TagFactory
-
-from datetime import date
 
 
 class TestStarForm(TestCase):
@@ -26,7 +25,8 @@ class TestStarForm(TestCase):
             username=self.user.username, password='secret')
 
         if not self.logged_in:
-            raise RuntimeError('Failed to prepare logged in client for testing')
+            raise RuntimeError(
+                'Failed to prepare logged in client for testing')
 
     def tearDown(self):
         self.authorized_client.logout()

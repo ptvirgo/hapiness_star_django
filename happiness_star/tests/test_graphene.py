@@ -5,14 +5,17 @@ import re
 from django.urls import reverse
 from django.test import Client, TestCase
 
+from user_extensions.factories import UserFactory
+
 from ..models import Star, Tag
-from ..factories import UserFactory, StarFactory
+from ..factories import StarFactory
 
 
 class GrapheneTestCase(TestCase):
     """Provide some standard test configuration for Graphql Queries"""
 
-    star_fields = ["spirit", "exercise", "play", "work", "friends", "adventure"]
+    star_fields = [
+        "spirit", "exercise", "play", "work", "friends", "adventure"]
     bad_jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1Mjc4ODkyMzcuMDk4NDUsIm5iZiI6MTUyNzg4ODYzNy4wOTg0NSwic3ViIjoiNCJ9.DDhCfcBtD0l89oAo3otUaiOZa0IktSvRoN_m5Rp8iWw"
 
     @classmethod
@@ -111,7 +114,8 @@ class TestReadStars(GrapheneTestCase):
 
         # star
         query = """{star(date: "%s", token: "%s"){%s}}
-                """ % (star.date, self.owner["jwt"], " ".join(self.star_fields))
+                """ % (star.date, self.owner["jwt"],
+                       " ".join(self.star_fields))
 
         result = self.execute(query, raise_errors=True)
 
@@ -187,5 +191,5 @@ class TestCreateStar(GrapheneTestCase):
         star.refresh_from_db()
 
         for field in self.star_fields:
-            self.assertEqual(
-                getattr(star, field), expect[field], msg=f"mismatch on {field}")
+            self.assertEqual(getattr(star, field),
+                             expect[field], msg=f"mismatch on {field}")

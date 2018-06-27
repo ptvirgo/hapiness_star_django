@@ -2,7 +2,8 @@ from datetime import date
 import factory
 import factory.fuzzy
 
-from user_extensions.factories import UserFactory
+from user_extensions.factories import ProfileFactory
+
 from . import models
 
 
@@ -10,7 +11,6 @@ class StarFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.Star
 
-    user = factory.SubFactory(UserFactory)
     date = date.today()
 
     spirit = factory.fuzzy.FuzzyInteger(1, 5)
@@ -19,6 +19,11 @@ class StarFactory(factory.django.DjangoModelFactory):
     play = factory.fuzzy.FuzzyInteger(1, 5)
     friends = factory.fuzzy.FuzzyInteger(1, 5)
     adventure = factory.fuzzy.FuzzyInteger(1, 5)
+
+    @factory.lazy_attribute
+    def user(self):
+        profile = ProfileFactory()
+        return profile.user
 
 
 class TagFactory(factory.django.DjangoModelFactory):
