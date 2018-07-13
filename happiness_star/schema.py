@@ -57,6 +57,7 @@ class SaveStar(graphene.Mutation):
     work = graphene.Int(required=True)
     friends = graphene.Int(required=True)
     adventure = graphene.Int(required=True)
+    tags = graphene.List(TagNode)
 
     class Arguments:
         spirit = graphene.Int()
@@ -66,6 +67,7 @@ class SaveStar(graphene.Mutation):
         friends = graphene.Int()
         adventure = graphene.Int()
         token = graphene.String(required=True)
+        tags = graphene.List(graphene.String)
 
     def mutate(self, info, **kwargs):
         try:
@@ -93,6 +95,23 @@ class SaveStar(graphene.Mutation):
             setattr(star, field, new_val)
 
         star.save()
+
+        tag_names = kwargs.get("tags", None)
+
+        if tag_names is not None:
+
+            for name in tag_names:
+
+                try:
+                    tag = Tag.objects.get(name=name.lower())
+                except Tag.DoesNotExist:
+                    tag = Tag(name=name.lower())
+
+                tag.save()
+                star.tag_set.add(tag)
+
+        star.save()
+
         return SaveStar(
             date=today, spirit=star.spirit, exercise=star.exercise,
             play=star.play, work=star.work,

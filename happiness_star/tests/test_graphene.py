@@ -39,7 +39,6 @@ class GrapheneTestCase(TestCase):
                           response.content.decode("utf-8"))
 
         if match is None:
-            print(response.content.decode("utf-8"))
             raise RuntimeError("jwt unavailable for test user")
 
         jwt = match.groups()[0]
@@ -70,7 +69,6 @@ class GrapheneTestCase(TestCase):
         try:
             result = json.loads(text)
         except Exception as err:
-            print(text)
             raise err
 
         if raise_errors and "errors" in result:
@@ -145,10 +143,10 @@ class TestReadStars(GrapheneTestCase):
         self.assertNotIn(unrelated.name, returned_tagnames)
 
 
-class TestCreateStar(GrapheneTestCase):
+class TestSaveStar(GrapheneTestCase):
     """Stars can be created via graphql"""
 
-    def test_create_requires_jwt(self):
+    def test_save_requires_jwt(self):
         query = """mutation{
                     saveStar(
                         spirit: 1,
@@ -167,7 +165,7 @@ class TestCreateStar(GrapheneTestCase):
         self.assertTrue("errors" in result)
         self.assertEqual(result["errors"][0]["message"], "not authorized")
 
-    def test_create_produces_star(self):
+    def test_save_produces_star(self):
         query = """mutation{
                     saveStar(
                         spirit: 1,
@@ -193,7 +191,7 @@ class TestCreateStar(GrapheneTestCase):
         self.assertEqual(lookup.friends, 5)
         self.assertEqual(lookup.adventure, 6)
 
-    def test_create_leaves_uspecified_values_alone(self):
+    def test_save_leaves_uspecified_values_alone(self):
         """
         Calling saveStar with some unspecified values should leave those values
         unchanged.
@@ -212,3 +210,29 @@ class TestCreateStar(GrapheneTestCase):
         for field in self.star_fields:
             self.assertEqual(getattr(star, field),
                              expect[field], msg=f"mismatch on {field}")
+
+    def test_save_adds_tags(self):
+        """
+        SaveStar can add tags
+        """
+        star = StarFactory(user=self.owner["user"])
+        tags = ["tag1", "tag2", "tag3"]
+        tag_string = ""
+
+        for c in str(tags).lower():
+            if c == "'":
+                tag_string += '"'
+            else:
+                tag_string += c
+
+        query = """mutation{ saveStar(token: "%s", tags: %s)
+            {date tags { name }}}""" % (self.owner["jwt"], tag_string)
+        self.execute(query, raise_errors=True)
+
+        star.refresh_from_db()
+        saved_tags = [tag.name for tag in star.tag_set.all()]
+
+        for tag_name in tags:
+            self.assertIn(tag_name, saved_tags)
+
+        self.assertEqual(len(tags), len(saved_tags))
