@@ -5,12 +5,22 @@ from graphene_django import DjangoObjectType
 
 from user_extensions.utils import jwt_user, user_time
 
-from .models import Star
+from .models import Star, Tag
+
+
+class TagNode(DjangoObjectType):
+    class Meta:
+        model = Tag
 
 
 class StarNode(DjangoObjectType):
     class Meta:
         model = Star
+
+    tags = graphene.List(TagNode)
+
+    def resolve_tags(root, info):
+        return Tag.objects.filter(star=root)
 
 
 class StarQuery(graphene.ObjectType):

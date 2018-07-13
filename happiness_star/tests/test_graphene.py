@@ -8,7 +8,7 @@ from django.test import Client, TestCase
 from user_extensions.factories import UserFactory
 
 from ..models import Star, Tag
-from ..factories import StarFactory
+from ..factories import StarFactory, TagFactory
 
 
 class GrapheneTestCase(TestCase):
@@ -124,6 +124,25 @@ class TestReadStars(GrapheneTestCase):
                 getattr(star, field, None),
                 result["data"]["star"][field],
                 msg="mismatch on %s" % (field,))
+
+    def test_star_tags(self):
+        """Star tags are readable"""
+        star = StarFactory(user=self.owner["user"])
+        star.tag_set.add(TagFactory())
+        star.tag_set.add(TagFactory())
+        star.tag_set.add(TagFactory())
+
+        unrelated = TagFactory()
+
+        query = """{star(date: "%s", token: "%s"){tags {name}}}""" % \
+                (star.date, self.owner["jwt"])
+        result = self.execute(query, raise_errors=True)
+        returned_tagnames = [t["name"] for t in result["data"]["star"]["tags"]]
+
+        for tag in star.tag_set.all():
+            self.assertIn(tag.name, returned_tagnames)
+
+        self.assertNotIn(unrelated.name, returned_tagnames)
 
 
 class TestCreateStar(GrapheneTestCase):
