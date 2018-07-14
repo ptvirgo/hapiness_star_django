@@ -1,5 +1,8 @@
 module Model exposing (..)
 
+{-| Tags |-}
+type alias Tag = String
+
 {-| Rating is a value, 1-5, associated with the area (Spirit, Exercise, etc)
 tracked by the Star -}
 type alias Rating = Int
