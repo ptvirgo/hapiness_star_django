@@ -43,11 +43,23 @@ randomStar = Fuzz.custom
         |> Shrink.andMap (Shrink.string star.date)
     )
 
-suite : Test
-suite = describe "Stars Front-End"
-    [ testUpdates ]
-
 
 testUpdates : Test
 testUpdates = describe "Update Messages"
-    []
+    [ fuzz randomStar "NewStar replaces any star" <| \generatedStar ->
+        Expect.equal
+            ( { star = Just generatedStar, jwt = "dummy", error = Nothing }
+            , Cmd.none
+            )
+            <| updateModel
+                ( NewStar generatedStar )
+                { star = Nothing, jwt = "dummy", error = Just "discard" }
+    , fuzz2 string randomStar "GotError adds error message" <| \err genStar ->
+        Expect.equal
+            ( { star = Just genStar, jwt = "dummy", error = Just err }
+            , Cmd.none
+            )
+            <| updateModel
+                (GotError err)
+                { star = Just genStar, jwt = "dummy", error = Nothing }
+    ]
