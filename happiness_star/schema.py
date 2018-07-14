@@ -57,7 +57,7 @@ class SaveStar(graphene.Mutation):
     work = graphene.Int(required=True)
     friends = graphene.Int(required=True)
     adventure = graphene.Int(required=True)
-    tags = graphene.List(TagNode)
+    tags = graphene.List(TagNode, required=True)
 
     class Arguments:
         spirit = graphene.Int()
@@ -73,9 +73,6 @@ class SaveStar(graphene.Mutation):
         try:
             user = jwt_user(kwargs["token"])
         except:
-            user = None
-
-        if user is None:
             raise ValueError("not authorized")
 
         today = user_time(user)
@@ -115,7 +112,8 @@ class SaveStar(graphene.Mutation):
         return SaveStar(
             date=today, spirit=star.spirit, exercise=star.exercise,
             play=star.play, work=star.work,
-            friends=star.friends, adventure=star.adventure)
+            friends=star.friends, adventure=star.adventure,
+            tags=star.tag_set.all())
 
 
 class StarMutation(graphene.ObjectType):

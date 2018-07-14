@@ -227,12 +227,14 @@ class TestSaveStar(GrapheneTestCase):
 
         query = """mutation{ saveStar(token: "%s", tags: %s)
             {date tags { name }}}""" % (self.owner["jwt"], tag_string)
-        self.execute(query, raise_errors=True)
+        result = self.execute(query, raise_errors=True)
 
         star.refresh_from_db()
         saved_tags = [tag.name for tag in star.tag_set.all()]
+        result_tags = [tag["name"] for tag in result["data"]["saveStar"]["tags"]]
 
         for tag_name in tags:
             self.assertIn(tag_name, saved_tags)
+            self.assertIn(tag_name, result_tags)
 
         self.assertEqual(len(tags), len(saved_tags))
