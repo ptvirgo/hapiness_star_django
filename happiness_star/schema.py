@@ -98,11 +98,12 @@ class SaveStar(graphene.Mutation):
         if tag_names is not None:
 
             for name in tag_names:
+                lc = name.lower()
 
                 try:
-                    tag = Tag.objects.get(name=name.lower())
+                    tag = Tag.objects.get(name=lc)
                 except Tag.DoesNotExist:
-                    tag = Tag(name=name.lower())
+                    tag = Tag(name=lc)
 
                 tag.save()
                 star.tag_set.add(tag)

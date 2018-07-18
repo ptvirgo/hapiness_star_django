@@ -8,6 +8,15 @@ def one_to_five(number):
     if number < 1 or number > 5:
         raise ValidationError('Must be between 1 and 5')
 
+def lowercase_alphanumeric(text):
+    """Ensure text is lowercase, alphanumeric"""
+
+    if type(text) is not str:
+        raise ValidationError('Must be str')
+
+    if not text.islower() and text.isalnum():
+        raise ValidationError('Must be lowercase letters and numbers')
+
 
 class Star(models.Model):
 
@@ -50,7 +59,8 @@ class Star(models.Model):
 
 class Tag(models.Model):
 
-    name = models.CharField(max_length=64, unique=True)
+    name = models.CharField(max_length=64, unique=True,
+                            validators=[lowercase_alphanumeric])
     star = models.ManyToManyField(Star)
 
     def __repr__(self):
